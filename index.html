@@ -1,0 +1,1607 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盖洛普优势识别器 V2.0 - 发现你的天赋</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 优化后的现代化样式 */
+        :root {
+            --primary-color: #4A90E2; /* 主色：优雅蓝 */
+            --secondary-color: #50C9C3; /* 辅色：青绿色 */
+            --accent-color: #F39C12; /* 强调色：金橙色 */
+            --text-color: #2C3E50;
+            --text-light: #7F8C8D;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --font-main: 'Noto Sans SC', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #test-page .container {
+            display: block;
+            min-height: auto;
+            padding: 0;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.8em;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary:disabled {
+            background: #cccccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        #welcome-page .card {
+            text-align: center;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #welcome-page h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        #welcome-page p {
+            font-size: 1.1em;
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        #welcome-page .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        #welcome-page .stat-item {
+            text-align: center;
+        }
+
+        #welcome-page .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        #welcome-page .stat-label {
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+
+        #instructions-page ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        #instructions-page ul li {
+            padding: 12px 0;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        #instructions-page ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        #instructions-page h3 {
+            margin-bottom: 20px;
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+            z-index: 10;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* 测试页面布局 - 优化为移动优先 */
+        #test-page .container {
+            max-width: 100%;
+            padding: 0;
+        }
+
+        .test-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .question-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .question-sidebar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 2px solid rgba(102, 126, 234, 0.3);
+            max-height: 30vh;
+            overflow-y: auto;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            padding: 5px 0;
+        }
+
+        .question-nav-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            background-color: #d0d0d0;
+            color: #666;
+            font-size: 0.75em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .question-nav-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .question-nav-btn.answered {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .question-nav-btn.current {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+
+        .sidebar-header {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #666;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+
+        .question-card {
+            text-align: center;
+            padding: 20px 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .question-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .statement-A, .statement-B {
+            font-size: 1em;
+            font-weight: 400;
+            padding: 15px 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-color: rgba(248, 249, 250, 0.9);
+            text-align: left;
+            line-height: 1.6;
+        }
+        .statement-A { border-left: 4px solid var(--primary-color); }
+        .statement-B { border-right: 4px solid var(--secondary-color); }
+
+
+        .selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 25px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .option:hover {
+            transform: scale(1.1);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .top-strengths-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 30px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .strength-card {
+            background-color: var(--card-bg);
+            padding: 35px 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            border-left: 6px solid var(--secondary-color);
+            margin-bottom: 30px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .strength-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .strength-card h3 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            text-align: left;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .strength-card p {
+            font-size: 1em;
+            color: #555;
+            line-height: 1.9;
+        }
+
+        .rank-badge {
+            font-size: 3em;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .narrative-box {
+            padding: 20px 25px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            line-height: 1.9;
+            margin-top: 15px;
+            border-left: 3px solid #e0e0e0;
+        }
+
+        .narrative-box p {
+            margin: 0;
+            font-size: 1.05em;
+            color: #444;
+            text-align: justify;
+            text-indent: 2em;
+        }
+
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            #welcome-page h1 {
+                font-size: 3.2em;
+            }
+
+            #welcome-page .card {
+                padding: 60px 50px;
+            }
+
+            #welcome-page .stat-number {
+                font-size: 2.5em;
+            }
+
+            .question-card {
+                padding: 40px 30px;
+            }
+
+            .question-card h3 {
+                font-size: 1.6em;
+                margin-bottom: 30px;
+            }
+
+            .statement-A, .statement-B {
+                font-size: 1.2em;
+                padding: 20px 25px;
+            }
+
+            .option {
+                width: 50px;
+                height: 50px;
+                font-size: 1em;
+            }
+
+            .selector {
+                gap: 15px;
+                margin: 35px 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            body {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 25px 20px;
+                margin-bottom: 15px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .btn-primary {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+
+            #instructions-page h3 {
+                font-size: 1.1em;
+            }
+
+            #instructions-page ul li {
+                font-size: 0.95em;
+                padding: 8px 0;
+                padding-left: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="welcome-page" class="page active">
+            <div class="card">
+                <div style="font-size: 3em; margin-bottom: 15px;">🌟</div>
+                <h1>盖洛普优势识别器</h1>
+                <p style="max-width: 600px; margin: 0 auto 20px; line-height: 1.6;">
+                    基于盖洛普 StrengthsFinder 理论<br>
+                    通过 180 道精心设计的题目<br>
+                    <strong style="color: var(--primary-color);">发现你天生最突出的 34 项天赋优势</strong>
+                </p>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--primary-color);">180</div>
+                        <div class="stat-label">道题目</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--secondary-color);">34</div>
+                        <div class="stat-label">项优势</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--accent-color);">Top 5</div>
+                        <div class="stat-label">核心优势</div>
+                    </div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="#" class="btn btn-primary" onclick="showPage('instructions-page')">
+                        开始探索 →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="instructions-page" class="page">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);">
+                <h2 style="margin-bottom: 30px;">✨ 发现你的天赋优势</h2>
+                
+                <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 25px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary-color);">
+                    <h3 style="color: var(--primary-color); text-align: left; margin-top: 0; font-size: 1.3em;">🎯 为什么要识别优势？</h3>
+                    <ul style="text-align: left; line-height: 2; color: var(--text-color); margin: 0;">
+                        <li><strong>提升自我认知：</strong>深入了解自己的天赋才干，明确个人独特价值</li>
+                        <li><strong>优化职业发展：</strong>找到最适合发挥优势的工作领域和岗位</li>
+                        <li><strong>提高工作效率：</strong>聚焦优势领域，事半功倍地达成目标</li>
+                        <li><strong>增强团队协作：</strong>理解他人优势，实现优势互补</li>
+                        <li><strong>提升生活满意度：</strong>在优势领域投入更多，获得更多成就感</li>
+                    </ul>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                    <h3 style="color: var(--secondary-color); text-align: left; margin-top: 0; font-size: 1.3em;">📋 测试说明</h3>
+                    <ul style="text-align: left; line-height: 2; color: var(--text-color); margin: 0;">
+                        <li><strong>题量：</strong>共 180 组题目，每组包含两个相互对立的陈述</li>
+                        <li><strong>时间：</strong>建议在 60 分钟内完成，凭第一直觉作答最准确</li>
+                        <li><strong>作答方式：</strong>在 A 和 B 之间选择更符合您的选项，可选择程度（特别同意、比较同意、居中）</li>
+                    </ul>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #50C9C315 0%, #4A90E215 100%); padding: 20px; border-radius: 15px; text-align: center;">
+                    <p style="margin: 0; font-size: 1.1em; color: var(--text-color); line-height: 1.8;">
+                        <strong style="color: var(--secondary-color);">💡 温馨提示：</strong>
+                        请根据真实感受作答，没有对错之分。<br>
+                        每个人都有独特的优势组合，发现并发挥它们，才能成就最好的自己！
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);">
+                <a href="#" class="btn btn-primary" onclick="startTest()" style="font-size: 1.2em; padding: 18px 50px;">
+                    🚀 开始探索我的优势 (共 180 题)
+                </a>
+            </div>
+        </div>
+
+        <div id="test-page" class="page">
+            <div class="test-layout">
+                <!-- 顶部进度条 -->
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span id="question-index">题号: 0/180</span>
+                        <span id="timer">时间: 60:00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- 主答题区域 -->
+                <div class="question-main">
+                    <div id="question-container" class="question-card">
+                        <p>正在加载题目...</p>
+                    </div>
+                </div>
+
+                <!-- 底部导航栏 -->
+                <div class="question-sidebar">
+                    <div class="sidebar-header">题目导航 (点击跳转)</div>
+                    <div id="question-nav" class="question-nav"></div>
+                    <div class="sidebar-footer">
+                        <button id="submit-btn" class="btn btn-primary" onclick="calculateResults()" style="width: 100%; max-width: 300px;">
+                            📊 提交并查看结果
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-overview-page" class="page">
+            <h2>📊 您的完整优势分析报告</h2>
+            <p style="text-align: center; color: #666;">以下是您所有34个优势主题的标准化得分排名</p>
+            
+            <div class="card">
+                <h3 style="text-align: left; color: #333; margin-bottom: 20px;">完整优势排名</h3>
+                <table id="full-rank-table" style="width: 100%; border-collapse: collapse; font-size: 0.95em;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="border-bottom: 2px solid #ddd; padding: 12px; text-align: left;">排名</th>
+                            <th style="border-bottom: 2px solid #ddd; padding: 12px; text-align: left;">优势主题</th>
+                            <th style="border-bottom: 2px solid #ddd; padding: 12px; text-align: right;">标准化得分</th>
+                        </tr>
+                    </thead>
+                    <tbody id="full-rank-tbody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-primary" onclick="showPage('results-detail-page')" style="font-size: 1.2em; padding: 15px 40px;">
+                    查看您的 Top 5 天赋优势详解 →
+                </button>
+            </div>
+
+            <div class="card" style="text-align: center; margin-top: 20px;">
+                <a href="#" class="btn" style="background-color: #eee; color: var(--text-color);" onclick="location.reload()">
+                    重新测试
+                </a>
+            </div>
+        </div>
+
+        <div id="results-detail-page" class="page">
+            <h2>🎉 您的 Top 5 天赋优势详解</h2>
+            <p style="text-align: center; color: #666;">以下是您最突出的五个优势主题的深度分析</p>
+            <div class="top-strengths-grid" id="strengths-results">
+            </div>
+            <div class="card" style="margin-top: 40px; text-align: center;">
+                <button class="btn" style="background-color: var(--secondary-color); color: white;" onclick="showPage('results-overview-page')">
+                    ← 返回完整排名
+                </button>
+                <a href="#" class="btn" style="background-color: #eee; color: var(--text-color); margin-left: 15px;" onclick="location.reload()">
+                    重新测试
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ----------------------------------------------------
+        // 1. 优势主题数据 (34个主题，结合PDF和CSV信息)
+        // ----------------------------------------------------
+        // 请注意：这里只列出部分主题及描述作为示例。
+        const THEMES_DATA = {
+            '成就': { name: '成就 (Achiever)', desc: '有强大的内驱力，对工作拥有无限的精力。' },
+            '统帅': { name: '统帅 (Command)', desc: '天生具有领导力，能控制局面，做出决策。' },
+            '统率': { name: '统率 (Command)', desc: '天生具有领导力，能控制局面，做出决策。' },
+            '体谅': { name: '体谅 (Empathy)', desc: '能设身处地感受他人的情感。' },
+            '理念': { name: '理念 (Ideation)', desc: '对概念和新想法充满热情，喜欢抽象思考。' },
+            '学习': { name: '学习 (Learner)', desc: '有旺盛的求知欲，尤其享受求知的过程。' },
+            '适应': { name: '适应 (Adaptability)', desc: '活在当下，能轻松应对突发事件和变化。' },
+            '分析': { name: '分析 (Analytical)', desc: '擅长研究数据和细节，找出模式和原因。' },
+            '亲和': { name: '亲和 (Relator)', desc: '与少数人建立深入而真诚的关系。' },
+            '统筹': { name: '统筹 (Arranger)', desc: '擅长组织和协调资源，找到最佳组合。' },
+            '战略': { name: '战略 (Strategic)', desc: '能快速发现模式，找出完成任务的最佳途径。' },
+            '个别': { name: '个别 (Individualization)', desc: '对每个人的与众不同之处兴趣盎然。' },
+            '伯乐': { name: '伯乐 (Developer)', desc: '善于赏识并发掘他人的潜能。' },
+            '积极': { name: '积极 (Positivity)', desc: '浑身充满了富有感染力的热情，感召周围的人。' },
+            '沟通': { name: '沟通 (Communication)', desc: '善于用言语将想法表达出来。' },
+            '搜集': { name: '搜集 (Input)', desc: '有搜集各种信息、书籍、引文或知识的需要。' },
+            '专注': { name: '专注 (Focus)', desc: '能够确定方向，贯彻始终，及时调整，矢志不渝。' },
+            '排难': { name: '排难 (Restorative)', desc: '擅长发现问题并解决问题。' },
+            '审慎': { name: '审慎 (Deliberative)', desc: '每做一个决定均慎之又慎，并设想所有的困难。' },
+            '关联': { name: '关联 (Connectedness)', desc: '深信世间万物都彼此关联。' },
+            '包容': { name: '包容 (Includer)', desc: '能够接受各种类型的人。' },
+            '行动': { name: '行动 (Activator)', desc: '能够将想法付诸行动。' },
+            '追求': { name: '追求 (Significance)', desc: '希望在别人的眼中非同凡响。' },
+            '信仰': { name: '信仰 (Belief)', desc: '拥有经久不变的核心价值观。' },
+            '自信': { name: '自信 (Self-Assurance)', desc: '对自己及自己的能力充满信心。' },
+            '取悦': { name: '取悦 (Woo)', desc: '喜欢赢取他人，能使他人喜欢自己。' },
+            '责任': { name: '责任 (Responsibility)', desc: '责任心强的人言必有信。' },
+            '回顾': { name: '回顾 (Context)', desc: '喜欢追溯过去，帮助他们了解现在。' },
+            '和谐': { name: '和谐 (Harmony)', desc: '不喜欢冲突，寻求共识。' },
+            '交往': { name: '交往 (Relator)', desc: '喜欢人际间的亲密关系。' },
+            '纪律': { name: '纪律 (Discipline)', desc: '喜欢按既定程序行事。' },
+            '思维': { name: '思维 (Intellection)', desc: '长于思考，勤于自省，敏于探讨。' },
+            '前瞻': { name: '前瞻 (Futuristic)', desc: '对未来感到兴奋，能清晰地描绘未来。' },
+            '完美': { name: '完美 (Maximizer)', desc: '专注于强项，努力把优秀的变成卓越。' },
+            '诚实': { name: '诚实 (Honesty)', desc: '在压力下能保持诚实。' },
+            '竞争': { name: '竞争 (Competition)', desc: '以他人的表现为衡量标准，力争第一。' },
+            '公平': { name: '公平 (Consistency)', desc: '注重平等和公正，制定明确的规则。' },
+            '谦逊': { name: '谦逊 (Humility)', desc: '不自负，不在意别人的评价。' },
+        };
+        
+        // 注意：叙事性描述 ALL_THEME_NARRATIVES 已在935行后定义
+        
+        // ----------------------------------------------------
+        // 2. 题目文本数据 (180题的A、B选项文本)
+        // 只包含题目的文本内容，不包含主题映射关系
+        // ----------------------------------------------------
+        const QUESTIONS_TEXT = [
+            { id: 1, statementA: "我乐于助人；", statementB: "我喜欢把东西拆开，了解其工作原理和运作的奥妙" },
+            { id: 2, statementA: "我喜欢与关注未来的人交往；", statementB: "我喜欢和历史学家交往" },
+            { id: 3, statementA: "我想要每个人都喜欢我；", statementB: "我想要人们崇拜我" },
+            { id: 4, statementA: "我力争第一；", statementB: "我重在参与" },
+            { id: 5, statementA: "我一贯努力工作；", statementB: "我做事进展较慢，但确保成效" },
+            { id: 6, statementA: "我思考自身的长处；", statementB: "我思考有待改进之处" },
+            { id: 7, statementA: "我是一个偏重情感的人；", statementB: "我是一个偏重理智的人" },
+            { id: 8, statementA: "我了解别人的个性特点；", statementB: "我能够接受各种类型的人" },
+            { id: 9, statementA: "主动与人交谈使我为难；", statementB: "与陌生人攀谈使我兴奋" },
+            { id: 10, statementA: "我对生活感觉极好；", statementB: "我认为我自己很能干" },
+            { id: 11, statementA: "我喜欢与人合作；", statementB: "我喜欢个人奋斗" },
+            { id: 12, statementA: "我能使别人有成就感；", statementB: "我能使别人感到我对他们很重要" },
+            { id: 13, statementA: "我按照自己的世界观去生活；", statementB: "我按照自己的理想去生活" },
+            { id: 14, statementA: "成为他人的知己使我满足；", statementB: "我希望成为他人的领导" },
+            { id: 15, statementA: "我不在意别人对我的所作所为怎么看，我做对自己有利的事；", statementB: "我始终清楚别人对我的看法" },
+            { id: 16, statementA: "我致力于发展；", statementB: "我信守自己的价值观" },
+            { id: 17, statementA: "我要自己的生活保持平衡；", statementB: "我希望我的家庭过最好的生活" },
+            { id: 18, statementA: "我每天多次谈到自己对未来的展望；", statementB: "我愿腾出时间思考未来" },
+            { id: 19, statementA: "我能够使别人兴奋起来；", statementB: "我能够使别人平静下来" },
+            { id: 20, statementA: "我一旦作出决定就必须付诸行动；", statementB: "我在行动之前需要确认自己行动无误" },
+            { id: 21, statementA: "我比大多数人更加专心去做要完成的事；", statementB: "我统观全局顺其自然" },
+            { id: 22, statementA: "我认为世上没有巧合，一切都事出有因；", statementB: "对我来说巧合指运气、机遇、侥幸、偶然" },
+            { id: 23, statementA: "我善于交谈；", statementB: "我善于倾听" },
+            { id: 24, statementA: "我喜欢表扬别人；", statementB: "我喜欢受到表扬" },
+            { id: 25, statementA: "我喜欢竞赛；", statementB: "我喜欢工作" },
+            { id: 26, statementA: "我思考问题脚踏实地，善于借助专家寻找正确答案；", statementB: "我思考问题善于创造，且有战略眼光，对规律和问题一目了然" },
+            { id: 27, statementA: "我充满活力，满怀喜悦和欢乐；", statementB: "我了解影响形势的所有因素" },
+            { id: 28, statementA: "我想成为一家大公司的总裁；", statementB: "我为别人牵线搭桥" },
+            { id: 29, statementA: "我有时会威逼别人；", statementB: "我在大人物面前感到渺小" },
+            { id: 30, statementA: "我能设身处地为别着想；", statementB: "我能够爱别人，爱所有的人" },
+            { id: 31, statementA: "我推动别人成功；", statementB: "我使别人快乐" },
+            { id: 32, statementA: "我是一个无忧无虑的人；", statementB: "我比我的朋友、同事更成熟" },
+            { id: 33, statementA: "我尽量与别人一起做事；", statementB: "我喜欢为别人张罗" },
+            { id: 34, statementA: "通过研究我的历史我可以预测未来；", statementB: "我的过去与我的未来无关" },
+            { id: 35, statementA: "我属于超越自我的宏观世界；", statementB: "我是一个脚踏实地的人" },
+            { id: 36, statementA: "我要我的工作和生活融为一体；", statementB: "工作只是一种谋生的手段" },
+            { id: 37, statementA: "有人不喜欢我时，我会感到沮丧；", statementB: "如果自己认为不对的事，就会感到内疚" },
+            { id: 38, statementA: "我组织；", statementB: "我分析" },
+            { id: 39, statementA: "我能把握对别人的谈话要点，使他们感觉良好；", statementB: "我通过倾听，使人们感觉获得理解" },
+            { id: 40, statementA: "我喜欢富于哲理的人；", statementB: "我喜欢和勤奋而富有成效的人交往" },
+            { id: 41, statementA: "我乐于使别人认识其自身的价值；", statementB: "我乐于使别人有成就感" },
+            { id: 42, statementA: "我靠直觉解决问题；", statementB: "我使用来源可靠的准确信息" },
+            { id: 43, statementA: "我对生活持有一种健康的怀疑态度；", statementB: "我相信自己与全人类相连" },
+            { id: 44, statementA: "我的朋友请我讲故事；", statementB: "我的朋友请我出主意" },
+            { id: 45, statementA: "我在上午工作效率最高；", statementB: "我在晚上工作效率最高" },
+            { id: 46, statementA: "我与大多数人比不相上下，无需工作更努力，更持久；", statementB: "我精力充沛，始终比大多数人工作更努力，更持久" },
+            { id: 47, statementA: "任何与体育有关的事都会强烈吸引我；", statementB: "任何与人文思想有关的事都会强烈吸引我；" },
+            { id: 48, statementA: "我是一个十分整洁的人；", statementB: "我非常固执" },
+            { id: 49, statementA: "我通过与别人分享而成长；", statementB: "我通过学习而成长" },
+            { id: 50, statementA: "我按照自己对未来的书面规划而行动；", statementB: "我走一步，看一步" },
+            { id: 51, statementA: "我注重未来可能取得的成就；", statementB: "我注重应对未来可能发生的事件" },
+            { id: 52, statementA: "我不排斥任何人，从而不伤害他们的感情；", statementB: "我仔细挑选我的朋友" },
+            { id: 53, statementA: "我不自负，不在乎别人是否把我视为可信、专业化或成功人士；", statementB: "别人是否把我视为可信、专业化或成功人士对我很重要；" },
+            { id: 54, statementA: "我喜欢了解大战的起因；", statementB: "我喜欢了解50年后的世界经济" },
+            { id: 55, statementA: "我对生活中的遇到事件进行分析；", statementB: "我对影响我生活的事件充满激情" },
+            { id: 56, statementA: "我通过发挥自身的才干取得进步；", statementB: "我通过克服自身的弱点取得进步；" },
+            { id: 57, statementA: "对我来说每件事都必须事先计划；", statementB: "我喜欢顺其自然" },
+            { id: 58, statementA: "我寻找各种不同的做事方法；", statementB: "我确立常规的做事方法" },
+            { id: 59, statementA: "我讨厌爱发脾气的人；", statementB: "我认为必要时可以发脾气" },
+            { id: 60, statementA: "我喜欢放松；", statementB: "我喜欢清扫" },
+            { id: 61, statementA: "有钱就是幸福；", statementB: "有钱不等于幸福" },
+            { id: 62, statementA: "我征求别人的意见；", statementB: "别人征求我的意见" },
+            { id: 63, statementA: "我认为平等对待所有人，并制定明确的规则至关重要；", statementB: "我认为应了解每个人的特点，并进行个别激励" },
+            { id: 64, statementA: "我借助专家寻找正确答案；", statementB: "我对答案和问题一目了然" },
+            { id: 65, statementA: "我非常慷慨地称赞别人；", statementB: "我有选择地称赞别人" },
+            { id: 66, statementA: "我只有在竞争中赢得第一才能感到完全满意；", statementB: "我只要在比赛中名列前茅就感到高兴" },
+            { id: 67, statementA: "我善于使截然不同的人相互合作；", statementB: "我有平等对待人的天赋" },
+            { id: 68, statementA: "我尽量不离开自己舒适的领地；", statementB: "我是一个寻求刺激的人" },
+            { id: 69, statementA: "我能够体会同事的感受；", statementB: "我喜欢和同事们高谈阔论" },
+            { id: 70, statementA: "我关注人们的特点，而不在乎我是否喜欢他们；", statementB: "我不喜欢某些人，他们和我格格不入" },
+            { id: 71, statementA: "我凭感觉进行重要决策；", statementB: "我凭理智进行重要决策；" },
+            { id: 72, statementA: "我随着事情的发生采取行动；", statementB: "我分清事情的轻重缓急，然后采取行动" },
+            { id: 73, statementA: "我喜欢每个人；", statementB: "我要每个人都喜欢我" },
+            { id: 74, statementA: "根据当前的需要，我主要专著做好眼前的事；", statementB: "我着眼于未来的发展" },
+            { id: 75, statementA: "我每周设定业绩目标；", statementB: "我的工作根据当日需求而定" },
+            { id: 76, statementA: "我必须强迫自己才能学习；", statementB: "我对自己感兴趣的事能集中注意力" },
+            { id: 77, statementA: "我喜欢要求精确性的工作；", statementB: "我喜欢团队合作" },
+            { id: 78, statementA: "我研究别人的行为根源；", statementB: "我惯于自我反思" },
+            { id: 79, statementA: "我按部就班；", statementB: "我热情洋溢" },
+            { id: 80, statementA: "我对教育满怀热忱；", statementB: "我对消除暴利满怀热忱" },
+            { id: 81, statementA: "我喜欢别人听我讲话；", statementB: "我喜欢听别人讲话" },
+            { id: 82, statementA: "我很会讲故事；", statementB: "我善于辅导" },
+            { id: 83, statementA: "我喜欢讲话；", statementB: "我喜欢思考" },
+            { id: 84, statementA: "我是个完美主义者；", statementB: "我是个实干家" },
+            { id: 85, statementA: "我思考问题脚踏实地,广泛调查分析；", statementB: "我思考问题善于创造，且具有战略眼光" },
+            { id: 86, statementA: "我总是描准最出色的同行去改进自己；", statementB: "我愿意与欣赏我的长处的人交往" },
+            { id: 87, statementA: "我能同时照顾好几件事；", statementB: "我愿意为别人作出牺牲" },
+            { id: 88, statementA: "我善于交际；", statementB: "我喜欢与朋友一道努力工作" },
+            { id: 89, statementA: "我思维敏捷,经常提出独特的观点；", statementB: "我的谈话使人愉快" },
+            { id: 90, statementA: "我热爱学习；", statementB: "我喜欢外出" },
+            { id: 91, statementA: "我喜欢一切按照规章制度办事；", statementB: "我喜欢反复检查，确保一切井井有条" },
+            { id: 92, statementA: "我善于观察人们之间的区别；", statementB: "我平等对待所有人" },
+            { id: 93, statementA: "我的成功之道在于克服弱点，弥补缺陷；", statementB: "我的成功之道在于增强自身的才干" },
+            { id: 94, statementA: "在遇到困难，而必须圆满完成任务时，我往往亲自动手干；", statementB: "在遇到困难，而必须圆满完成任务时，我往往依靠团队成员的各自优势，而不事必躬亲" },
+            { id: 95, statementA: "我的性格外向；", statementB: "在必要时我能够作到开朗大方" },
+            { id: 96, statementA: "我喜欢解释事情；", statementB: "我喜欢做事情" },
+            { id: 97, statementA: "有时也可以歪曲事实；", statementB: "永远没有理由说谎" },
+            { id: 98, statementA: "我的工作已经满负荷；", statementB: "我还有很大潜力" },
+            { id: 99, statementA: "我以严谨著称；", statementB: "我以幽默感著称" },
+            { id: 100, statementA: "我正在创造我的未来；", statementB: "我正在研究我的未来" },
+            { id: 101, statementA: "我喜欢挑战别人；", statementB: "我喜欢鼓励别人" },
+            { id: 102, statementA: "我是一个非常在意隐私的人；", statementB: "我的生活如同一本开启的书" },
+            { id: 103, statementA: "我慷慨；", statementB: "我节俭" },
+            { id: 104, statementA: "我是一名领导者；", statementB: "我是一名很有成就的人" },
+            { id: 105, statementA: "我有时会奉承别人；", statementB: "我为人正直" },
+            { id: 106, statementA: "我能根据需要长时间学习；", statementB: "我能够集中注意力的时间很短" },
+            { id: 107, statementA: "我避免过分赞扬人，因此当我这样做时就显得很有份量；", statementB: "我慷慨地赞扬我的同事" },
+            { id: 108, statementA: "我愿意了解新事物；", statementB: "我的价值观很稳定" },
+            { id: 109, statementA: "我的生活有目的；", statementB: "我的生活充满欢乐" },
+            { id: 110, statementA: "我喜欢富有哲理的讨论；", statementB: "我喜欢制定目标的会议" },
+            { id: 111, statementA: "我喜欢独处；", statementB: "我想念我的朋友" },
+            { id: 112, statementA: "我想象未来；", statementB: "我理解造成当前情形的原因" },
+            { id: 113, statementA: "我能够实事求是地看待自己；", statementB: "我难于坦诚地看待自己" },
+            { id: 114, statementA: "我愿意花大量的时间和朋友们在一起；", statementB: "我喜欢专心做我认为重要的事情" },
+            { id: 115, statementA: "我小时候喜欢和一大帮朋友们一起玩；", statementB: "我小时候循规蹈矩从不给同伴或大人惹麻烦" },
+            { id: 116, statementA: "我喜欢招待别人；", statementB: "我答应别人的事一定要做到" },
+            { id: 117, statementA: "我有自己独特的做事方法；", statementB: "我遵循规则" },
+            { id: 118, statementA: "我喜欢使自己忙碌起来；", statementB: "我喜欢帮助别人使他们自己忙碌起来" },
+            { id: 119, statementA: "我喜欢自己做主，不喜欢别人干扰；", statementB: "我不喜欢与别人争吵" },
+            { id: 120, statementA: "我经常问“为什么？”；", statementB: "我经常问“如何才能？”" },
+            { id: 121, statementA: "我喜欢谈论我喜欢的事物；", statementB: "我喜欢谈论我擅长的事物" },
+            { id: 122, statementA: "我的生活中有许多戏剧性的变化；", statementB: "我喜欢可预测的生活" },
+            { id: 123, statementA: "我对别人怀有同情心；", statementB: "我理解别人的想法" },
+            { id: 124, statementA: "我喜欢别人把我看成是十分重要的人；", statementB: "我喜欢别人把我视为十分诚恳的人" },
+            { id: 125, statementA: "我喜欢结识新朋友；", statementB: "我喜欢加强已有的友谊" },
+            { id: 126, statementA: "我追求真理；", statementB: "我追求美丽" },
+            { id: 127, statementA: "我倾向于冒险；", statementB: "我倾向于保守" },
+            { id: 128, statementA: "我更善于创造新观念；", statementB: "我更善于组织新观念" },
+            { id: 129, statementA: "我能使自己的生活井然有序；", statementB: "我能理解别人的处境和感受" },
+            { id: 130, statementA: "我喜欢在众人面前；", statementB: "我喜欢在幕后工作" },
+            { id: 131, statementA: "我关注未来；", statementB: "我关注过去" },
+            { id: 132, statementA: "我喜欢与人交朋友；", statementB: "我喜欢单独工作" },
+            { id: 133, statementA: "我善于把复杂的事情简单化；", statementB: "我能与他人轻松共处" },
+            { id: 134, statementA: "我很少休息；", statementB: "我很少停止学习" },
+            { id: 135, statementA: "我喜欢竞赛；", statementB: "我喜欢与别人合作" },
+            { id: 136, statementA: "我是一个实事求是的人；", statementB: "我是一个热情洋溢的人" },
+            { id: 137, statementA: "我是一个十分有条理的人；", statementB: "我是一个具有奉献精神的人" },
+            { id: 138, statementA: "我喜欢制定战略；", statementB: "我喜欢实现战略" },
+            { id: 139, statementA: "我喜欢使别人感到对我很重要；", statementB: "我喜欢使别人感到有成就感" },
+            { id: 140, statementA: "我喜欢别人请我帮忙；", statementB: "我喜欢被别人请教" },
+            { id: 141, statementA: "我善于发现事物的不足；", statementB: "我善于发现事物的优势" },
+            { id: 142, statementA: "我喜欢独处；", statementB: "我喜欢与别人一道工作" },
+            { id: 143, statementA: "我是一个完美主义者；", statementB: "我是一个适应性很强的人" },
+            { id: 144, statementA: "我的问题是善于轻易改变；", statementB: "我的问题是做事有始有终" },
+            { id: 145, statementA: "我能和所有的人和睦相处；", statementB: "我仔细分析我的合作伙伴,尽可能了解每个人的个性和背景" },
+            { id: 146, statementA: "我兴趣广泛，好奇心强；", statementB: "我专注把握我感兴趣的事做好" },
+            { id: 147, statementA: "我观察生活；", statementB: "我主宰自己的生活" },
+            { id: 148, statementA: "为了解决一个问题，我常契而不舍地长时间工作；", statementB: "我最多只能集中精力工作学习一个小时左右" },
+            { id: 149, statementA: "我的成就非凡；", statementB: "我一贯创造积极成果" },
+            { id: 150, statementA: "我比别人更机智；", statementB: "我在很多人面前感到渺小" },
+            { id: 151, statementA: "我善于高效率地同时作几件事；", statementB: "我习惯于一次只做一件事" },
+            { id: 152, statementA: "我希望经常与我的上司和同事沟通；", statementB: "我希望有更多的自己独立支配的时间" },
+            { id: 153, statementA: "我善于构思并发起一个新项目；", statementB: "我善于组织落实" },
+            { id: 154, statementA: "我经常思考数字；", statementB: "我喜欢思考宏观形象的事情" },
+            { id: 155, statementA: "我偏爱讨论思想；", statementB: "我偏爱体育运动" },
+            { id: 156, statementA: "我的词汇富于哲理；", statementB: "我的词汇偏重实用" },
+            { id: 157, statementA: "我使用简短的词汇；", statementB: "我常用复杂抽象的词汇" },
+            { id: 158, statementA: "我的大脑不停地思考；", statementB: "我的身体需要经常活动" },
+            { id: 159, statementA: "我喜欢听讲；", statementB: "我喜欢提问" },
+            { id: 160, statementA: "我乐于助人；", statementB: "我喜欢把东西拆开，了解其工作原理和运作的奥妙" },
+            { id: 161, statementA: "我喜欢与关注未来的人交往；", statementB: "我喜欢和历史学家交往" },
+            { id: 162, statementA: "我想要每个人都喜欢我；", statementB: "我想要人们崇拜我" },
+            { id: 163, statementA: "我力争第一；", statementB: "我重在参与" },
+            { id: 164, statementA: "我一贯努力工作；", statementB: "我做事进展较慢，但确保成效" },
+            { id: 165, statementA: "我思考自身的长处；", statementB: "我思考有待改进之处" },
+            { id: 166, statementA: "我是一个偏重情感的人；", statementB: "我是一个偏重理智的人" },
+            { id: 167, statementA: "我了解别人的个性特点；", statementB: "我能够接受各种类型的人" },
+            { id: 168, statementA: "主动与人交谈使我为难；", statementB: "与陌生人攀谈使我兴奋" },
+            { id: 169, statementA: "我对生活感觉极好；", statementB: "我认为我自己很能干" },
+            { id: 170, statementA: "我喜欢与人合作；", statementB: "我喜欢个人奋斗" },
+            { id: 171, statementA: "我能使别人有成就感；", statementB: "我能使别人感到我对他们很重要" },
+            { id: 172, statementA: "我按照自己的世界观去生活；", statementB: "我按照自己的理想去生活" },
+            { id: 173, statementA: "成为他人的知己使我满足；", statementB: "我希望成为他人的领导" },
+            { id: 174, statementA: "我不在意别人对我的所作所为怎么看，我做对自己有利的事；", statementB: "我始终清楚别人对我的看法" },
+            { id: 175, statementA: "我致力于发展；", statementB: "我信守自己的价值观" },
+            { id: 176, statementA: "我要自己的生活保持平衡；", statementB: "我希望我的家庭过最好的生活" },
+            { id: 177, statementA: "我每天多次谈到自己对未来的展望；", statementB: "我愿腾出时间思考未来" },
+            { id: 178, statementA: "我能够使别人兴奋起来；", statementB: "我能够使别人平静下来" },
+            { id: 179, statementA: "我一旦作出决定就必须付诸行动；", statementB: "我在行动之前需要确认自己行动无误" },
+            { id: 180, statementA: "我比大多数人更加专心去做要完成的事；", statementB: "我统观全局顺其自然" },
+            // ** 实际应用中，这里需要补充到 180 组题目 **
+        ];
+        
+        const TOTAL_QUESTIONS = 180; // 假定总题量为 180
+        let currentQuestionIndex = 0;
+        let userScores = {}; 
+        let userResponses = []; // 存储用户选择
+        let timerInterval;
+
+        // ----------------------------------------------------
+        // 3. 核心逻辑函数
+        // ----------------------------------------------------
+
+        function initApp() {
+            // 初始化所有优势主题分数
+            Object.keys(THEMES_DATA).forEach(theme => {
+                userScores[theme] = 0;
+            });
+            showPage('welcome-page');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function startTest() {
+            currentQuestionIndex = 0;
+            userScores = {}; // 重置分数
+            userResponses = new Array(TOTAL_QUESTIONS).fill(null); // 初始化答题记录
+            Object.keys(THEMES_DATA).forEach(theme => { userScores[theme] = 0; });
+            showPage('test-page');
+            renderQuestionNav(); // 渲染题目导航
+            renderQuestion(currentQuestionIndex);
+            startTimer();
+        }
+
+        function renderQuestionNav() {
+            const navContainer = document.getElementById('question-nav');
+            navContainer.innerHTML = '';
+            
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'question-nav-btn';
+                btn.textContent = i + 1;
+                btn.dataset.index = i;
+                
+                // 标记已答题
+                if (userResponses[i] !== null) {
+                    btn.classList.add('answered');
+                }
+                
+                // 标记当前题
+                if (i === currentQuestionIndex) {
+                    btn.classList.add('current');
+                }
+                
+                btn.addEventListener('click', () => {
+                    currentQuestionIndex = i;
+                    renderQuestion(currentQuestionIndex);
+                    updateQuestionNav();
+                });
+                
+                navContainer.appendChild(btn);
+            }
+        }
+
+        function updateQuestionNav() {
+            const buttons = document.querySelectorAll('.question-nav-btn');
+            buttons.forEach((btn, index) => {
+                btn.classList.remove('current');
+                btn.classList.remove('answered');
+                
+                if (userResponses[index] !== null) {
+                    btn.classList.add('answered');
+                }
+                
+                if (index === currentQuestionIndex) {
+                    btn.classList.add('current');
+                }
+            });
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            let time = 60 * 60; // 60 分钟
+            const timerEl = document.getElementById('timer');
+            
+            timerInterval = setInterval(() => {
+                time--;
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+                timerEl.textContent = `时间: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (time <= 0) {
+                    clearInterval(timerInterval);
+                    alert("时间到！系统将自动提交您的答案。");
+                    calculateResults();
+                }
+            }, 1000);
+        }
+
+        function renderQuestion(index) {
+            const container = document.getElementById('question-container');
+            // 从 QUESTIONS_TEXT 获取题目文本
+            const question = QUESTIONS_TEXT[index] || { 
+                id: index + 1, 
+                statementA: "（请添加第 " + (index + 1) + " 题的 A 选项）", 
+                statementB: "（请添加第 " + (index + 1) + " 题的 B 选项）" 
+            };
+
+            document.getElementById('question-index').textContent = `题号: ${index + 1}/${TOTAL_QUESTIONS}`;
+            document.getElementById('progress-fill').style.width = `${((index + 1) / TOTAL_QUESTIONS) * 100}%`;
+            
+            container.innerHTML = `
+                <h3>第 ${index + 1} 题</h3>
+                <div class="statement-A">
+                    <strong>A 组问题:</strong> ${question.statementA}
+                </div>
+                
+                <div class="selector">
+                    <div class="option" data-score="3" data-choice="A" title="特别同意 A">A: 3</div>
+                    <div class="option" data-score="2" data-choice="A" title="比较同意 A">A: 2</div>
+                    <div class="option" data-score="1" data-choice="Center" title="居中/中立">中: 1</div>
+                    <div class="option" data-score="2" data-choice="B" title="比较同意 B">B: 2</div>
+                    <div class="option" data-score="3" data-choice="B" title="特别同意 B">B: 3</div>
+                </div>
+
+                <div class="statement-B">
+                    <strong>B 组问题:</strong> ${question.statementB}
+                </div>
+            `;
+
+            // 重新标记已选择的选项
+            const isAnswered = userResponses[index] !== null;
+            if (isAnswered) {
+                const choice = userResponses[index];
+                container.querySelector(`.option[data-choice="${choice.choice}"][data-score="${choice.score}"]`).classList.add('selected');
+            }
+
+            container.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', (e) => handleSelection(e.target, index));
+            });
+        }
+
+        // 处理用户选择 - 实现简化评分逻辑
+        function handleSelection(selectedEl, index) {
+            const selector = selectedEl.closest('.selector');
+            selector.querySelectorAll('.option').forEach(op => op.classList.remove('selected'));
+            selectedEl.classList.add('selected');
+
+            const choice = selectedEl.dataset.choice; // A, B, or Center
+            const score = parseInt(selectedEl.dataset.score);
+
+            // 存储用户选择
+            userResponses[index] = { choice, score, id: index + 1 };
+
+            // 更新题目导航状态
+            updateQuestionNav();
+
+            // 自动跳转到下一题（延迟300ms以便用户看到选择效果）
+            setTimeout(() => {
+                if (currentQuestionIndex < TOTAL_QUESTIONS - 1) {
+                    currentQuestionIndex++;
+                    renderQuestion(currentQuestionIndex);
+                    updateQuestionNav();
+                }
+            }, 300);
+        }
+
+        // ==============================================================================
+        // 核心数据结构：34 个主题名称 (THEME_NAMES)
+        // ==============================================================================
+        const THEME_NAMES = ['成就', '行动', '适应', '分析', '统筹', '信仰', '统率', '沟通', '竞争', '关联', '回顾',
+            '审慎', '伯乐', '纪律', '体谅', '公平', '专注', '前瞻', '和谐', '理念', '包容', '个别',
+            '搜集', '思维', '学习', '完美', '积极', '交往', '责任', '排难', '自信', '追求', '战略', '取悦'];
+
+        // ==============================================================================
+        // 核心数据结构：每个主题对应的最大问题数 (MAX_QUESTIONS_PER_THEME)
+        // ==============================================================================
+        const MAX_QUESTIONS_PER_THEME = {
+            '成就': 19, '行动': 18, '适应': 18, '分析': 19, '统筹': 15, '信仰': 17, '统率': 15, '沟通': 16,
+            '竞争': 15, '关联': 18, '回顾': 15, '审慎': 20, '伯乐': 16, '纪律': 17, '体谅': 15, '公平': 16,
+            '专注': 16, '前瞻': 16, '和谐': 16, '理念': 18, '包容': 17, '个别': 16, '搜集': 17, '思维': 20,
+            '学习': 16, '完美': 17, '积极': 16, '交往': 16, '责任': 16, '排难': 16, '自信': 17, '追求': 19,
+            '战略': 20, '取悦': 16
+        };
+
+        // ==============================================================================
+        // 正确的主题映射（来自Excel文件）
+        // 格式：题号: { A_THEMES: [主题1, 主题2, ...], B_THEMES: [主题1, 主题2, ...] }
+        // 支持一道题的A或B选项对应多个主题
+        // ==============================================================================
+        const CORRECT_THEME_MAPPING = {
+    1: { A_THEMES: ["信仰","体谅","交往","排难"], B_THEMES: ["分析","学习"] },
+    2: { A_THEMES: ["前瞻"], B_THEMES: ["回顾"] },
+    3: { A_THEMES: ["取悦"], B_THEMES: ["追求"] },
+    4: { A_THEMES: ["成就","竞争","完美"], B_THEMES: ["学习"] },
+    5: { A_THEMES: ["成就"], B_THEMES: ["责任"] },
+    6: { A_THEMES: ["完美"], B_THEMES: ["追求"] },
+    7: { A_THEMES: ["信仰","体谅","公平","取悦"], B_THEMES: ["分析","统筹","统率","审慎","战略"] },
+    8: { A_THEMES: ["体谅","个别"], B_THEMES: ["公平","包容"] },
+    9: { A_THEMES: ["审慎"], B_THEMES: ["取悦"] },
+    10: { A_THEMES: ["积极"], B_THEMES: ["自信"] },
+    11: { A_THEMES: ["包容","交往"], B_THEMES: ["思维","自信"] },
+    12: { A_THEMES: ["伯乐"], B_THEMES: ["统率"] },
+    13: { A_THEMES: ["信仰"], B_THEMES: ["完美"] },
+    14: { A_THEMES: ["交往"], B_THEMES: ["统率"] },
+    15: { A_THEMES: ["统率"], B_THEMES: ["体谅"] },
+    16: { A_THEMES: ["前瞻"], B_THEMES: ["信仰"] },
+    17: { A_THEMES: ["审慎"], B_THEMES: ["完美","追求"] },
+    18: { A_THEMES: ["前瞻"], B_THEMES: ["追求","战略"] },
+    19: { A_THEMES: ["积极"], B_THEMES: ["和谐"] },
+    20: { A_THEMES: ["行动"], B_THEMES: ["审慎"] },
+    21: { A_THEMES: ["专注"], B_THEMES: ["适应"] },
+    22: { A_THEMES: ["关联"], B_THEMES: ["适应"] },
+    23: { A_THEMES: ["沟通"], B_THEMES: ["体谅"] },
+    24: { A_THEMES: ["伯乐","积极","取悦"], B_THEMES: ["成就","追求"] },
+    25: { A_THEMES: ["竞争"], B_THEMES: ["交往"] },
+    26: { A_THEMES: ["关联"], B_THEMES: ["理念","思维","战略"] },
+    27: { A_THEMES: ["审慎","积极"], B_THEMES: ["分析"] },
+    28: { A_THEMES: ["成就","统率","追求"], B_THEMES: ["伯乐"] },
+    29: { A_THEMES: ["统率"], B_THEMES: ["和谐"] },
+    30: { A_THEMES: ["体谅","个别"], B_THEMES: ["信仰","公平"] },
+    31: { A_THEMES: ["伯乐"], B_THEMES: ["积极"] },
+    32: { A_THEMES: ["积极"], B_THEMES: ["统筹","审慎","战略"] },
+    33: { A_THEMES: ["和谐","包容"], B_THEMES: ["统筹","伯乐","排难","取悦"] },
+    34: { A_THEMES: ["回顾"], B_THEMES: ["适应"] },
+    35: { A_THEMES: ["前瞻"], B_THEMES: ["行动"] },
+    36: { A_THEMES: ["信仰","追求"], B_THEMES: ["适应"] },
+    37: { A_THEMES: ["追求"], B_THEMES: ["责任"] },
+    38: { A_THEMES: ["行动","统率"], B_THEMES: ["分析"] },
+    39: { A_THEMES: ["沟通","体谅"], B_THEMES: ["取悦"] },
+    40: { A_THEMES: ["理念"], B_THEMES: ["行动"] },
+    41: { A_THEMES: ["个别"], B_THEMES: ["积极"] },
+    42: { A_THEMES: ["适应","自信"], B_THEMES: ["分析","审慎","搜集"] },
+    43: { A_THEMES: ["分析","审慎"], B_THEMES: ["关联"] },
+    44: { A_THEMES: ["沟通"], B_THEMES: ["排难","战略"] },
+    45: { A_THEMES: ["行动"], B_THEMES: ["思维"] },
+    46: { A_THEMES: ["自信"], B_THEMES: ["成就"] },
+    47: { A_THEMES: ["行动"], B_THEMES: ["理念","思维"] },
+    48: { A_THEMES: ["行动"], B_THEMES: ["统率","自信"] },
+    49: { A_THEMES: ["交往"], B_THEMES: ["搜集","思维","学习"] },
+    50: { A_THEMES: ["纪律"], B_THEMES: ["适应","和谐"] },
+    51: { A_THEMES: ["前瞻"], B_THEMES: ["审慎","战略"] },
+    52: { A_THEMES: ["公平","和谐"], B_THEMES: ["审慎"] },
+    53: { A_THEMES: ["关联"], B_THEMES: ["竞争","追求"] },
+    54: { A_THEMES: ["回顾"], B_THEMES: ["前瞻"] },
+    55: { A_THEMES: ["分析","回顾","思维","完美"], B_THEMES: ["前瞻","积极"] },
+    56: { A_THEMES: ["无"], B_THEMES: ["回顾","完美"] },
+    57: { A_THEMES: ["纪律"], B_THEMES: ["适应"] },
+    58: { A_THEMES: ["个别"], B_THEMES: ["纪律","公平"] },
+    59: { A_THEMES: ["关联"], B_THEMES: ["统率"] },
+    60: { A_THEMES: ["积极"], B_THEMES: ["纪律"] },
+    61: { A_THEMES: ["积极"], B_THEMES: ["关联"] },
+    62: { A_THEMES: ["关联","和谐","包容","搜集"], B_THEMES: ["统筹","统率","战略"] },
+    63: { A_THEMES: ["公平"], B_THEMES: ["个别"] },
+    64: { A_THEMES: ["搜集"], B_THEMES: ["思维"] },
+    65: { A_THEMES: ["积极"], B_THEMES: ["审慎"] },
+    66: { A_THEMES: ["成就","竞争","完美","追求"], B_THEMES: ["学习","积极"] },
+    67: { A_THEMES: ["和谐","个别","交往"], B_THEMES: ["公平"] },
+    68: { A_THEMES: ["审慎"], B_THEMES: ["自信"] },
+    69: { A_THEMES: ["体谅","和谐","个别"], B_THEMES: ["沟通","包容","取悦"] },
+    70: { A_THEMES: ["个别","搜集"], B_THEMES: ["审慎"] },
+    71: { A_THEMES: ["自信"], B_THEMES: ["分析","审慎","战略"] },
+    72: { A_THEMES: ["适应"], B_THEMES: ["统筹"] },
+    73: { A_THEMES: ["体谅"], B_THEMES: ["取悦"] },
+    74: { A_THEMES: ["适应","专注"], B_THEMES: ["前瞻","战略"] },
+    75: { A_THEMES: ["纪律","专注","前瞻"], B_THEMES: ["适应"] },
+    76: { A_THEMES: ["无"], B_THEMES: ["专注","思维","学习"] },
+    77: { A_THEMES: ["纪律"], B_THEMES: ["包容","交往"] },
+    78: { A_THEMES: ["分析","关联"], B_THEMES: ["思维"] },
+    79: { A_THEMES: ["统筹","纪律","专注"], B_THEMES: ["适应","积极"] },
+    80: { A_THEMES: ["信仰"], B_THEMES: ["排难"] },
+    81: { A_THEMES: ["统率"], B_THEMES: ["体谅"] },
+    82: { A_THEMES: ["沟通","回顾"], B_THEMES: ["伯乐","排难"] },
+    83: { A_THEMES: ["沟通"], B_THEMES: ["思维"] },
+    84: { A_THEMES: ["竞争","完美"], B_THEMES: ["行动"] },
+    85: { A_THEMES: ["行动","分析","搜集"], B_THEMES: ["理念","战略"] },
+    86: { A_THEMES: ["成就","竞争","搜集","学习","追求"], B_THEMES: ["完美"] },
+    87: { A_THEMES: ["统筹"], B_THEMES: ["信仰"] },
+    88: { A_THEMES: ["沟通","交往","取悦"], B_THEMES: ["和谐","包容"] },
+    89: { A_THEMES: ["理念"], B_THEMES: ["沟通","交往","取悦"] },
+    90: { A_THEMES: ["学习"], B_THEMES: ["行动","搜集"] },
+    91: { A_THEMES: ["纪律","公平"], B_THEMES: ["无"] },
+    92: { A_THEMES: ["体谅","个别"], B_THEMES: ["公平"] },
+    93: { A_THEMES: ["责任","追求"], B_THEMES: ["完美"] },
+    94: { A_THEMES: ["行动","责任"], B_THEMES: ["统筹","统率"] },
+    95: { A_THEMES: ["沟通","取悦"], B_THEMES: ["体谅"] },
+    96: { A_THEMES: ["战略"], B_THEMES: ["行动"] },
+    97: { A_THEMES: ["适应"], B_THEMES: ["信仰","纪律"] },
+    98: { A_THEMES: ["无"], B_THEMES: ["自信"] },
+    99: { A_THEMES: ["纪律"], B_THEMES: ["沟通","积极"] },
+    100: { A_THEMES: ["行动"], B_THEMES: ["前瞻","战略"] },
+    101: { A_THEMES: ["自信","追求"], B_THEMES: ["伯乐"] },
+    102: { A_THEMES: ["审慎"], B_THEMES: ["交往"] },
+    103: { A_THEMES: ["审慎","交往"], B_THEMES: ["无"] },
+    104: { A_THEMES: ["统率","责任"], B_THEMES: ["成就"] },
+    105: { A_THEMES: ["取悦"], B_THEMES: ["审慎"] },
+    106: { A_THEMES: ["专注","学习"], B_THEMES: ["无"] },
+    107: { A_THEMES: ["审慎"], B_THEMES: ["取悦"] },
+    108: { A_THEMES: ["搜集"], B_THEMES: ["信仰"] },
+    109: { A_THEMES: ["成就"], B_THEMES: ["积极"] },
+    110: { A_THEMES: ["理念"], B_THEMES: ["成就"] },
+    111: { A_THEMES: ["思维"], B_THEMES: ["交往"] },
+    112: { A_THEMES: ["前瞻"], B_THEMES: ["分析","关联","回顾"] },
+    113: { A_THEMES: ["关联"], B_THEMES: ["自信"] },
+    114: { A_THEMES: ["交往"], B_THEMES: ["专注"] },
+    115: { A_THEMES: ["包容"], B_THEMES: ["纪律"] },
+    116: { A_THEMES: ["包容"], B_THEMES: ["责任"] },
+    117: { A_THEMES: ["追求"], B_THEMES: ["纪律"] },
+    118: { A_THEMES: ["沟通"], B_THEMES: ["伯乐","排难"] },
+    119: { A_THEMES: ["无"], B_THEMES: ["信仰","责任"] },
+    120: { A_THEMES: ["搜集"], B_THEMES: ["自信"] },
+    121: { A_THEMES: ["追求"], B_THEMES: ["积极"] },
+    122: { A_THEMES: ["适应"], B_THEMES: ["纪律","责任"] },
+    123: { A_THEMES: ["伯乐","包容"], B_THEMES: ["无"] },
+    124: { A_THEMES: ["交往"], B_THEMES: ["自信"] },
+    125: { A_THEMES: ["回顾"], B_THEMES: ["成就","前瞻"] },
+    126: { A_THEMES: ["统筹","责任","排难"], B_THEMES: ["无"] },
+    127: { A_THEMES: ["适应"], B_THEMES: ["信仰","责任"] },
+    128: { A_THEMES: ["信仰","学习"], B_THEMES: ["追求"] },
+    129: { A_THEMES: ["体谅","公平"], B_THEMES: ["责任"] },
+    130: { A_THEMES: ["专注"], B_THEMES: ["回顾"] },
+    131: { A_THEMES: ["和谐","学习"], B_THEMES: ["成就","追求"] },
+    132: { A_THEMES: ["学习"], B_THEMES: ["追求"] },
+    133: { A_THEMES: ["分析","战略"], B_THEMES: ["行动"] },
+    134: { A_THEMES: ["分析","关联","回顾"], B_THEMES: ["成就"] },
+    135: { A_THEMES: ["搜集"], B_THEMES: ["完美"] },
+    136: { A_THEMES: ["理念"], B_THEMES: ["成就","排难"] },
+    137: { A_THEMES: ["公平","包容","取悦"], B_THEMES: ["伯乐","个别","完美"] },
+    138: { A_THEMES: ["竞争"], B_THEMES: ["前瞻","排难","战略"] },
+    139: { A_THEMES: ["竞争","公平","排难"], B_THEMES: ["沟通","关联","和谐","包容","交往"] },
+    140: { A_THEMES: ["分析","回顾","排难"], B_THEMES: ["专注","思维","学习","完美"] },
+    141: { A_THEMES: ["伯乐","个别","完美"], B_THEMES: ["公平"] },
+    142: { A_THEMES: ["无"], B_THEMES: ["成就","专注"] },
+    143: { A_THEMES: ["无"], B_THEMES: ["成就","竞争","纪律","责任","战略"] },
+    144: { A_THEMES: ["行动"], B_THEMES: ["责任"] },
+    145: { A_THEMES: ["沟通","竞争","关联","体谅","公平","和谐","包容","取悦"], B_THEMES: ["审慎","伯乐","个别","搜集"] },
+    146: { A_THEMES: ["搜集"], B_THEMES: ["专注","思维","完美"] },
+    147: { A_THEMES: ["适应","体谅","和谐"], B_THEMES: ["统筹","理念","自信"] },
+    148: { A_THEMES: ["专注","排难"], B_THEMES: ["无"] },
+    149: { A_THEMES: ["成就","竞争","完美","自信"], B_THEMES: ["学习"] },
+    150: { A_THEMES: ["统筹","竞争","理念","战略"], B_THEMES: ["和谐"] },
+    151: { A_THEMES: ["统筹"], B_THEMES: ["专注"] },
+    152: { A_THEMES: ["适应","沟通","关联","包容","个别","搜集"], B_THEMES: ["思维","追求"] },
+    153: { A_THEMES: ["统率","理念","战略"], B_THEMES: ["行动","统筹","排难"] },
+    154: { A_THEMES: ["分析","专注"], B_THEMES: ["统率","理念","战略"] },
+    155: { A_THEMES: ["理念","思维","学习"], B_THEMES: ["竞争"] },
+    156: { A_THEMES: ["理念"], B_THEMES: ["行动"] },
+    157: { A_THEMES: ["沟通"], B_THEMES: ["分析"] },
+    158: { A_THEMES: ["理念","思维"], B_THEMES: ["行动"] },
+    159: { A_THEMES: ["和谐"], B_THEMES: ["包容"] },
+    160: { A_THEMES: ["成就","信仰","责任","排难"], B_THEMES: ["分析"] },
+    161: { A_THEMES: ["理念","思维","学习"], B_THEMES: ["无"] },
+    162: { A_THEMES: ["纪律"], B_THEMES: ["信仰","责任"] },
+    163: { A_THEMES: ["理念","责任"], B_THEMES: ["专注"] },
+    164: { A_THEMES: ["理念","思维"], B_THEMES: ["关联","包容","个别"] },
+    165: { A_THEMES: ["分析","专注","思维"], B_THEMES: ["理念"] },
+    166: { A_THEMES: ["分析"], B_THEMES: ["学习"] },
+    167: { A_THEMES: ["成就","竞争","个别"], B_THEMES: ["纪律","公平"] },
+    168: { A_THEMES: ["信仰"], B_THEMES: ["自信","战略"] },
+    169: { A_THEMES: ["思维"], B_THEMES: ["关联","和谐","包容"] },
+    170: { A_THEMES: ["完美"], B_THEMES: ["关联"] },
+    171: { A_THEMES: ["自信"], B_THEMES: ["信仰"] },
+    172: { A_THEMES: ["回顾"], B_THEMES: ["前瞻"] },
+    173: { A_THEMES: ["回顾","伯乐"], B_THEMES: ["竞争","搜集"] },
+    174: { A_THEMES: ["统筹"], B_THEMES: ["伯乐","排难"] },
+    175: { A_THEMES: ["适应","统筹"], B_THEMES: ["纪律","公平"] },
+    176: { A_THEMES: ["回顾"], B_THEMES: ["前瞻"] },
+    177: { A_THEMES: ["回顾","伯乐","搜集"], B_THEMES: ["沟通","前瞻"] },
+    178: { A_THEMES: ["交往"], B_THEMES: ["取悦"] },
+    179: { A_THEMES: ["战略"], B_THEMES: ["适应","搜集"] },
+    180: { A_THEMES: ["排难","自信"], B_THEMES: ["关联","伯乐","个别"] },
+};
+
+
+        // ==============================================================================
+        // 核心数据结构：评分矩阵 (SCORING_MATRIX_MAP)
+        // 直接使用 CORRECT_THEME_MAPPING（已经是正确的格式）
+        // ==============================================================================
+        const SCORING_MATRIX_MAP = [];
+        for (let i = 1; i <= 180; i++) {
+            SCORING_MATRIX_MAP.push(CORRECT_THEME_MAPPING[i]);
+        }
+
+        // 调试：统计每个主题在 SCORING_MATRIX_MAP 中的实际出现次数
+        function getActualThemeCount() {
+            const actualCount = {};
+            THEME_NAMES.forEach(theme => actualCount[theme] = 0);
+            
+            // 使用 SCORING_MATRIX_MAP（基于 CORRECT_THEME_MAPPING）来统计
+            SCORING_MATRIX_MAP.forEach(scoreMap => {
+                scoreMap.A_THEMES.forEach(theme => {
+                    if (actualCount.hasOwnProperty(theme)) {
+                        actualCount[theme]++;
+                    }
+                });
+                scoreMap.B_THEMES.forEach(theme => {
+                    if (actualCount.hasOwnProperty(theme)) {
+                        actualCount[theme]++;
+                    }
+                });
+            });
+            
+            console.log('=== 主题出现次数统计（基于正确的映射）===');
+            console.log('主题 | 实际出现次数 | 定义的最大问题数 | 差异');
+            let hasMismatch = false;
+            THEME_NAMES.forEach(theme => {
+                const actual = actualCount[theme];
+                const defined = MAX_QUESTIONS_PER_THEME[theme];
+                const diff = actual - defined;
+                const status = diff === 0 ? '✓' : '✗';
+                if (diff !== 0) hasMismatch = true;
+                console.log(`${status} ${theme}: 实际=${actual}, 定义=${defined}, 差异=${diff > 0 ? '+' : ''}${diff}`);
+            });
+            
+            if (hasMismatch) {
+                console.warn('⚠️ 检测到数据不匹配！将使用实际出现次数进行计算，以确保所有主题平均分为1。');
+            } else {
+                console.log('✓ 所有主题的实际出现次数与定义的最大问题数完全匹配！');
+            }
+            
+            return actualCount;
+        }
+        
+        // 获取实际的主题出现次数（用于计算平均得分）
+        const ACTUAL_THEME_COUNT = getActualThemeCount();
+        
+        // 版本标识（用于调试）
+        console.log('=== 代码版本：V2.0 - 使用CORRECT_THEME_MAPPING ===');
+
+        // 提交并计算结果 - **新评分逻辑：基于评分矩阵和平均得分**
+        function calculateResults() {
+            clearInterval(timerInterval); 
+
+            // 检查数据完整性
+            if (SCORING_MATRIX_MAP.length === 0 || userResponses.length === 0) {
+                alert('错误：评分矩阵或用户回答数据为空。请在代码中替换 SCORING_MATRIX_MAP 占位符。');
+                return;
+            }
+
+            // 统计未答题数量
+            const unansweredCount = userResponses.filter(r => r === null).length;
+            
+            // 如果有未答题，提示用户
+            if (unansweredCount > 0) {
+                const confirmSubmit = confirm(`您还有 ${unansweredCount} 道题未作答。\n\n未答题将按照"居中"计分（A和B的所有主题都加1分）。\n\n确定要提交吗？`);
+                if (!confirmSubmit) {
+                    return; // 用户取消提交
+                }
+            }
+
+            // 1. 初始化主题总分
+            let themeTotalScores = THEME_NAMES.reduce((acc, theme) => {
+                acc[theme] = 0;
+                return acc;
+            }, {});
+
+            // 2. 核心评分循环：严格按照最新的计分逻辑
+            for (let i = 0; i < Math.min(userResponses.length, SCORING_MATRIX_MAP.length); i++) {
+                const questionScores = userResponses[i]; // 用户输入: { choice, score }
+                const scoreMap = SCORING_MATRIX_MAP[i]; // 评分矩阵: { A_THEMES, B_THEMES }
+
+                // 如果未答题，按照"居中"计分
+                if (questionScores === null) {
+                    // 居中：对 A_THEMES 和 B_THEMES 中的主题都加 1 分
+                    scoreMap.A_THEMES.forEach(theme => {
+                        if (themeTotalScores.hasOwnProperty(theme)) {
+                            themeTotalScores[theme] += 1;
+                        }
+                    });
+                    scoreMap.B_THEMES.forEach(theme => {
+                        if (themeTotalScores.hasOwnProperty(theme)) {
+                            themeTotalScores[theme] += 1;
+                        }
+                    });
+                    continue;
+                }
+
+                const { choice, score } = questionScores;
+
+                // 核心逻辑：用户选择的分数直接加到对应主题上
+                if (choice === 'A') {
+                    // 选择 A: 给 A_THEMES 中的所有主题加上用户选择的分数
+                    scoreMap.A_THEMES.forEach(theme => {
+                        if (themeTotalScores.hasOwnProperty(theme)) {
+                            themeTotalScores[theme] += score;
+                        }
+                    });
+                } else if (choice === 'B') {
+                    // 选择 B: 给 B_THEMES 中的所有主题加上用户选择的分数
+                    scoreMap.B_THEMES.forEach(theme => {
+                        if (themeTotalScores.hasOwnProperty(theme)) {
+                            themeTotalScores[theme] += score;
+                        }
+                    });
+                } else if (choice === 'Center') {
+                    // 选择居中: 给 A_THEMES 和 B_THEMES 中的所有主题都加 1 分
+                    scoreMap.A_THEMES.forEach(theme => {
+                        if (themeTotalScores.hasOwnProperty(theme)) {
+                            themeTotalScores[theme] += 1;
+                        }
+                    });
+                    scoreMap.B_THEMES.forEach(theme => {
+                        if (themeTotalScores.hasOwnProperty(theme)) {
+                            themeTotalScores[theme] += 1;
+                        }
+                    });
+                }
+            }
+
+            // 3. 打印详细的调试信息
+            console.log('=== 计分结果详细分析 ===');
+            console.log('前2题选A:3，其他178题选居中:1');
+            console.log('');
+            
+            // 特别关注交往和前瞻
+            const focusThemes = ['交往', '前瞻', '分析', '回顾'];
+            focusThemes.forEach(theme => {
+                const totalScore = themeTotalScores[theme] || 0;
+                const maxCount = MAX_QUESTIONS_PER_THEME[theme];
+                const actualCount = ACTUAL_THEME_COUNT[theme];
+                const avgScore = maxCount > 0 ? (totalScore / maxCount).toFixed(4) : 0;
+                console.log(`${theme}: 总分=${totalScore}, MAX次数=${maxCount}, 实际次数=${actualCount}, 平均分=${avgScore}`);
+            });
+            
+            console.log('');
+            console.log('=== 所有主题计分结果 ===');
+            THEME_NAMES.forEach(theme => {
+                const totalScore = themeTotalScores[theme] || 0;
+                const maxCount = MAX_QUESTIONS_PER_THEME[theme];
+                const actualCount = ACTUAL_THEME_COUNT[theme];
+                const avgScore = maxCount > 0 ? (totalScore / maxCount).toFixed(4) : 0;
+                console.log(`${theme}: 总分=${totalScore}, MAX次数=${maxCount}, 实际次数=${actualCount}, 平均分=${avgScore}`);
+            });
+
+            // 4. 计算最终平均得分
+            let resultsArray = THEME_NAMES.map(theme => {
+                const totalScore = themeTotalScores[theme] || 0;
+                const maxCount = MAX_QUESTIONS_PER_THEME[theme];
+                const actualCount = ACTUAL_THEME_COUNT[theme];  // 实际出现次数（用于调试）
+                // 最终得分 = 总得分 / MAX_QUESTIONS_PER_THEME（使用固定的预定义值）
+                const finalScore = maxCount > 0 ? totalScore / maxCount : 0;
+                // 获取完整叙事描述
+                const narrative = ALL_THEME_NARRATIVES[theme] || '（未找到完整的叙事描述）';
+                return {
+                    theme: theme,
+                    normalizedScore: parseFloat(finalScore.toFixed(4)), // 保留 4 位小数
+                    rawScore: totalScore,
+                    maxCount: maxCount,
+                    actualCount: actualCount,  // 实际出现次数（用于调试）
+                    desc: narrative
+                };
+            });
+
+            // 5. 排序
+            resultsArray.sort((a, b) => b.normalizedScore - a.normalizedScore);
+
+            // 调试信息：检查是否所有主题的实际出现次数等于最大问题数
+            console.log('=== 主题出现次数验证 ===');
+            resultsArray.forEach(item => {
+                if (item.actualCount !== item.maxCount) {
+                    console.warn(`⚠️ ${item.theme}: 实际出现${item.actualCount}次，但最大问题数设为${item.maxCount}`);
+                }
+            });
+
+            // 6. 渲染完整排名表格（总览页面）
+            const top5Themes = resultsArray.slice(0, 5).map(item => item.theme);
+            const tableBody = document.getElementById('full-rank-tbody');
+            tableBody.innerHTML = '';
+
+            resultsArray.forEach((item, index) => {
+                const rank = index + 1;
+                const isTop5 = top5Themes.includes(item.theme);
+                const rowStyle = isTop5 
+                    ? 'background-color: #fff3cd; font-weight: 600;' 
+                    : '';
+                const rankStyle = isTop5 
+                    ? 'color: #ff6b6b; font-weight: 700; font-size: 1.1em;' 
+                    : '';
+                
+                tableBody.innerHTML += `
+                    <tr style="${rowStyle}">
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; ${rankStyle}">${rank}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.theme}${isTop5 ? ' ⭐' : ''}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">${item.normalizedScore}</td>
+                    </tr>
+                `;
+                
+                // 调试：在控制台输出详细信息
+                console.log(`${item.theme}: 总分=${item.rawScore}, 出现次数=${item.actualCount}, 最大问题数=${item.maxCount}, 平均分=${item.normalizedScore}`);
+            });
+
+            // 6. 渲染 Top 5 详细页面（包含详细叙事描述）
+            const top5 = resultsArray.slice(0, 5);
+            const resultsContainer = document.getElementById('strengths-results');
+            resultsContainer.innerHTML = ''; 
+
+            top5.forEach((item, index) => {
+                const rank = index + 1;
+                const narrative = item.desc || '暂无详细描述。';
+                
+                resultsContainer.innerHTML += `
+                    <div class="strength-card">
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                            <div class="rank-badge" style="margin-right: 20px; flex-shrink: 0;">${rank}</div>
+                            <div style="flex: 1;">
+                                <h3>${item.theme}</h3>
+                                <p style="font-size: 0.95em; margin: 8px 0 0 0; color: var(--primary-color); font-weight: 600;">
+                                    平均得分: ${item.normalizedScore} (总分: ${item.rawScore} / ${item.maxCount} 题)
+                                </p>
+                            </div>
+                        </div>
+                        <div class="narrative-box">
+                            <p>${narrative}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 先显示总览页面
+            showPage('results-overview-page');
+        }
+
+        // ----------------------------------------------------
+        // ALL 34 优势主题的完整叙事性描述
+        // ----------------------------------------------------
+        const ALL_THEME_NARRATIVES = {
+    '成就': '你为成就而生。 你体内有团永不熄灭的火焰，驱使你不断追求有形的成果。你感到每一天都从零开始，只有通过努力工作和取得进展，才能获得满足感。你乐于忙碌，将生产力和持久力视为自己的勋章。你不是为了某个最终目标，而是为了不断攀登的体验。这种内在的动力使你能够持续工作而不知疲倦，也让你成为团队中无可替代的永动机。你的能量和对结果的执着，是推动一切向前发展的核心力量。',
+    '行动': '你渴望立即行动。 对你来说，想法如果不付诸实践，就毫无价值。一旦做出决定，你就迫不及待地想要开始，将行动视为通向理解的最佳途径。你不会被分析和计划所困扰，因为你相信只有迈出第一步，才能发现下一步在哪里。你勇于冒险，并且是打破僵局的第一人。你并非鲁莽，只是深知时机转瞬即逝，而行动是学习和进步的唯一方式。你用自己的冲劲点燃了周围的人，使他们从停滞不前的状态中解脱出来。',
+    '适应': '你活在“当前”。 你就像一条河流，不拘泥于固定的河道，随遇而安。面对任何突发事件，你都能轻松应对，因为你相信计划总是赶不上变化。你乐于顺应局势，并将变化视为一种兴奋而非威胁。你是一个优秀的多面手，能够在混乱中保持镇静和效率。你的心态是“船到桥头自然直”。在高度不确定的环境中，你提供了稳定性和灵活性，让团队能够毫不犹豫地改变航向，始终面向当下。',
+    '分析': '你沉浸于数据的海洋。 你不喜欢模糊的概念和未经证实的假设，渴望探究事物的来龙去脉。你的头脑是一个高效的过滤器，能够迅速识别出支撑或推翻论点的逻辑漏洞。你深信数据和证据的价值，并能够冷静地思考影响局面的诸多因素。你的思维模式是“如果能被证明，那就是事实”。你对准确性的执着，使你成为团队中值得信赖的理性和客观的基石，确保决策建立在坚实的基础之上。',
+    '统筹': '你是一个杂耍演员。当你面对一个涉及多种因素的复杂环境时，你喜欢把所有这些因素都抛向空中，将它们反复排列，直至你确信形成最佳组合。在你看来，此种行为毫无特别之处。你不过是试图琢磨出做事的最佳方案而已。然而，其它人由于缺乏这一主题，对你的杂耍本领瞠目结舌。他们会问，“你的脑袋里怎么能同时装这么多事情呢?”“你怎么能保持如此灵活，如此不假思索地放弃经过深思熟虑的计划，转而采取你突发奇想的全新方案呢?”但是你无法想象其它的做事方式。你是高度灵活性的杰出代表。如果你发现一个更好的转机地点或更优惠的票价，你就会在最后一刻突然改变旅行计划。同样，你会绞尽脑汁，思考完成一个新项目的最佳人员和资源组合。你事无巨细，总在寻找最佳配置。勿庸置疑，形势越是变化无常，你越能出神入化。有的人面对不测，会一口咬定，经过精心策划的计划不容更改，而另一些人则躲进现有的规则和程序中。你却不然。你奋身投入混乱的局面，设计新方案，搜寻新捷径，思考新合作-不停地玩杂耍。因为说到底，总有可能找到更好的方案。',
+    '信仰': '你拥有一座精神的灯塔。 你的生活基于某些经久不变的、普世的核心价值观，这些价值观如同一块压舱石，为你提供明确的生活目标和意义。你的信仰是诚实、责任、家庭或利他主义。你的行为是发自内心的，并且始终与你的世界观保持一致。你所做的一切都体现着深层的承诺，这种真诚使你获得了他人的尊重和信任。你不是在寻找价值，你本身就是价值的体现，你为你所做的事带来目的感和意义。',
+    '统率': '你具有天然的领导权威。 你拥有大将风度，能够直言不讳，要求人们面对事实。当你看到需要解决的问题时，你不会退缩，而是立即站出来掌舵。你的思维清晰、立场鲜明，并且能够果断地设定方向，号召他人跟随。你并不回避冲突，因为你知道有时必要的冲突是达成清晰结果的催化剂。你强大的存在感和不容置疑的决心，让人们愿意让你领航，因为他们相信你能够带领他们抵达终点。',
+    '沟通': '你以语言为工具。 你不仅喜欢说话，更擅长用语言将你的想法和理念栩栩如生地呈现在他人面前。你懂得如何选择恰当的词汇、比喻和故事来吸引听众，使抽象的概念变得具体可感。你乐于分享，善于表达，并且能够激发他人的兴趣。你的天赋在于搭建理解的桥梁，无论是通过精彩的演说还是迷人的对话，你总能使交流充满活力和能量。',
+    '竞争': '你渴望胜利。 竞争对你来说是一种动力。你不仅希望做得好，更希望比别人做得更好。你不断拿自己的表现与他人进行比较，并将这种比较转化为对卓越的追求。每一次超越、每一个排名，都为你带来强烈的满足感。你的目标是第一名，并且你会倾尽全力去达成。你的存在提高了团队的绩效标准，因为你对胜利的渴望是如此强烈和具有感染力。',
+    '关联': '你感知万物的联结。 你深信世间万物都彼此关联，没有巧合，凡事必有成因。你拥有广阔的视野，将自己视为宏观世界中的一个微小但重要的部分。这种信仰为你带来了谦逊与确定感，即使在面对混乱时，你也相信最终会有一个更好的结局。你善于将人和事件联系起来，帮助他人从更深的层次理解生活中的意义和相互依存性。',
+    '回顾': '你追溯历史，理解现在。 你对过去充满了好奇，因为你坚信“以史为鉴，可以知兴替”。你不是活在过去，而是利用过去。你喜欢挖掘事件的起源、演变的过程和其中的关键转折点，以便更好地解释当前的局面。当你理解了事物是如何发展到今天这一步时，你就能做出更明智的决定。你的智慧和对历史的掌握，使你成为团队中不可或缺的深度和洞察力来源。',
+    '审慎': '你走的每一步都深思熟虑。你是一个天生的风险管理者，在你做出任何决定或采取行动之前，都会设想所有的困难和潜在障碍。你为人低调、谨慎，不喜欢将自己的信息轻易公之于众。你的座右铭是“三思而后行”。你对保密性和预防措施的关注，为你赢得了可信赖的声誉。你的审慎确保了在你参与的项目中，很少会出现意外的纰漏或鲁莽的错误。',
+    '伯乐': '你看到了他人的潜能。 你有一种天赋，能够识别和发掘他人身上尚未成熟的才能。你相信，每个人都蕴含着巨大的成长空间。你专注于微小的进步，并用真诚的赞扬来鼓励他人继续前行。你像一位园丁，耐心而专注地培育着周围人的成长。你的最大满足是看到别人实现自我。你为团队带来了希望和动力，使每个人都能感觉到自己的价值和进步。',
+    '纪律': '你创造秩序。 你对世界的混乱感到不安，并渴望通过结构、例行程序和明确的计划来建立秩序。你喜欢一切井井有条、按部就班。你的生活充满了日程表、截止日期和精确的安排。这种对可预测性的需要，使你能够持续高效地工作。你提供的清晰框架和始终如一的执行力，使你的团队和工作环境都充满了稳定性和专业性。',
+    '体谅': '你感受他人的世界。 你能够设身处地地体会他人的情感，仿佛可以走进他们的内心。你不仅能感知到别人的感受，还能理解这些感受背后的细微差别。你不是同情，而是共情。虽然你不能使痛苦消失，但你能让人感到被理解和接纳。你对情感的敏感性使你成为一个优秀的倾听者和人际关系调解者，你总能用最恰当的方式给予支持。',
+    '公平': '你致力于人人平等。 你坚信所有人都应受到平等对待，并且你努力在任何环境中建立公正和明确的规则。你对于偏袒或特权行为感到不适。你倾向于一视同仁，确保流程和决策对每个人都公平可预测。你的这种平等意识为你赢得了正直和可靠的声誉，使你成为团队中值得信赖的公正仲裁者。',
+    '专注': '你拥有清晰的指向。 你的思维像一把激光，能够确定一个明确的方向，并排除一切干扰，矢志不渝地贯彻到底。一旦目标确定，你的日程、工作和关系都会围绕着这个目标进行调整。你是一个出色的执行者，因为你拒绝分散精力。你的坚持和对优先级的清晰认知，使你和你的团队能够以惊人的效率实现既定目标。',
+    '前瞻': '你活在未来。 你对未来充满了兴奋，并能清晰地描绘出“可能会怎样”的远景。你不是满足于当下，而是经常眺望地平线。你的想象力是你的优势，能够创造出令人振奋的画面和愿景。你的描述往往充满细节和力量，激励着他人超越眼前的困境。你为团队注入了希望和目的感，因为你总能指出一个值得为之努力的璀璨未来。',
+    '和谐': '你寻求共识。 你不喜欢冲突和矛盾，并将寻找共识视为你的天职。当人们意见不合时，你会本能地寻找共同点，并试图将争论引向富有成效的方向。你认为冲突只会浪费时间和精力。你是一个优秀的和事佬，你的平和倾向使你能够与各种类型的人和睦相处，确保团队环境的稳定与合作。',
+    '理念': '你为理念而痴迷。什么是理念?理念就是概念，就是对大部分事件的最合理的解释。当你透过复杂的表层，发现一个精彩而简明的概念，继而解释事物的本质时，你会喜不自胜。理念是一种关联。你的头脑总在寻找关联;因此，当表面截然不同的现象被某个不起眼的纽带联系在一起时，你会感到新奇。一个理念是对习以为常的挑战的全新见解。你乐于将我们熟知的世界转一个圈，让我们从一个陌生但充满新意的角度看它。你喜爱所有这些理念。因为它们深刻。因为它们新颖。因为它们能正本清源。因为它们引发争论。因为它们怪诞。由于所有这些原因，每当你产生一个新理念时，你都为之一振。别人可能视你为锐意创新、标新立异、富于理性或聪明过人。也许这些你都是。谁能说得准呢?你确信无疑的是理念使你激动不已。而大多数日子里，这就足够了。',
+    '包容': '你敞开大门。 你天生拥有一种本能，确保没有人在你的圈子或团队中感到被排斥。你相信，圈子越大越好。你是一个接纳者，乐于将各种背景、特点和能力的人纳入其中，并平等对待。你关注的是每个人的独特贡献，而非他们的差异。你的包容性创造了一个温暖、多元且具有归属感的环境。',
+    '个别': '你看到了独特的你。 你对每个人的与众不同之处兴趣盎然。你不会将人归类或使用通用模板。你的天赋在于能够观察、理解并欣赏每个人独特的动机、思维方式和优势。你善于琢磨如何将个性迥异的人组合在一起，创造出最大成效。你的个别化视角使你成为优秀的导师和团队领导者，因为你懂得如何根据每个人的特点来定制激励和职责。',
+    '搜集': '你是一个知识的仓库。 你拥有搜集各种信息、书籍、引文或知识的需要。你的好奇心是无限的，你不仅搜集自己感兴趣的信息，也搜集那些看似无用，但你认为“有一天可能会用得上”的东西。你的头脑里装满了各种事实、背景和细节，使你在任何需要信息时都能信手拈来。你为团队提供了深度和广度，是解决复杂问题时的重要资源。',
+    '思维': '你热爱思考。 你的最大特点是长于思考，勤于自省，敏于探讨。你的思维活动是你最宝贵的资源。你喜欢独处，以便能深入地探索一个概念、解决一个问题或进行自我反思。你不是在寻找特定的答案，而是享受思考本身的过程。你为团队带来了深度和视角，你的思考成果往往是清晰、逻辑严谨且深刻的。',
+    '学习': '你渴望不断提高。 学习对你来说不是一件苦差事，而是一种兴奋和满足。你对求知有旺盛的欲望，尤其令你激动的，是求知的过程而非结果。你喜欢从一个“不知”到“已知”的转变，并且乐于不断掌握新的技能和学科。你是一个持续成长的人，你的学习热情和对提升的执着，为你和你的团队带来了无限的可能性。',
+    '完美': '你将优秀升华为卓越。 你不会满足于平庸或仅仅是“做得不错”。你相信强项比弱点更有潜力。因此，你专注于挖掘、提升和精炼你和他人身上已经存在的优势。你不是修补缺陷的排难者，而是追求完美的雕刻师。你对卓越的追求是感染性的，你通过关注长处，使结果达到了更高的境界。',
+    '积极': '你带来阳光。 积极的人浑身充满了富有感染力的热情。他们用快乐、向上来感召周围的人。你慷慨赞人，笑容可掬，不失时机地捕捉幽默。有人说你无忧无虑。还有人但愿能象你一样乐观豁达。无论怎样，人们喜欢与你相处。有你在，他们的世界就更加美好，因为你的热情是如此富有感染力。由于缺乏你的精力和乐观，有的人感到他们的世界重复而乏味，甚至压力重重。你似乎总能设法活跃他们的心灵。你为每个项目注入欢乐。你庆祝每一项成就。你千方百计使每一件事都生机勃勃，激动人心。你由于精力充沛，会受到某些玩世不恭者的排斥，但你的积极主题使你很少灰心泄气。你内心深处确信，活着无比美好；工作充满乐趣；无论遇到什幺挫折，都不应失去幽默感。',
+    '交往': '你重视亲密关系。 你喜欢人际间的亲密关系，并将信任和真诚视为友谊的基石。你追求深厚的联系，而不仅仅是泛泛之交。你的最大满足是与朋友一道为实现一个目标而同舟共济。你仔细选择你的伙伴，一旦建立了友谊，你就会全心投入。你在团队中创造了忠诚和亲密的环境，是团队凝聚力的核心。',
+    '责任': '你言必有信。 责任心对你来说是一种内在的承诺。你信奉的价值观是诚实、忠诚，并且你总是完全兑现你所做的承诺。你不会轻易许诺，但一旦做出承诺，你就会竭尽全力去完成，无论需要付出多少时间和精力。人们信任你，知道把事情交给你就意味着万无一失。你的责任心是你个性的核心，也是你获得尊重的基础。',
+    '排难': '你是修复的能手。 排除故障对你来说是一种满足。当问题出现时，你不会逃避，而是感到一种兴奋。你的头脑擅长诊断、分析症状，并找到根本原因。你是一个优秀的侦探，能够迅速发现哪里出了问题，并设计出切实可行的解决方案。你通过将事物恢复到最佳状态，来证明自己的价值。',
+    '自信': '在你的心灵最深处,"你对自己的优势充满信心。你深知你是个有能力的人-有能力冒风险，有能力接受新的挑战，有能力提出要求，并且更重要的是，有能力履行诺言。然而不仅如此，由于具有自信的主题，你不仅对自己的能力，而且对自己的判断充满信心。当你观察世界的时候，你深知你的视点与众不同。而由于没有人看问题的角度与你完全一样，你知道没有人能为你作决定;也没有人能告诉你如何去思考。他们能够引导，能够建议，但只有你才是自己生活的主宰。只有你才有权作结论，下决心，去行动。这种权威，这种对自身生活方向的终极负责，并不使你畏惧。相反，它对于你顺乎自然。无论碰到什么情况，你似乎总能悟出该做什么。它也许并不适用于所有的人，但它是特定形势下你该做的事情。这一主题给你罩上一层神机妙算的光环。你与许多人不同，从不轻易被别人的论点所左右，无论他们多么巧言令色。这种自信既可能深藏不露，也可能一目了然，这取决于你的其它主题，。但它根深蒂固，牢不可破一如舰船的龙骨，它能抵御各种压力，使你把稳航向。',
+    '追求': '你渴望被承认。 你希望在别人的眼中非同凡响，渴望被承认和尊重。你追求卓越，因为你深知只有通过出色的表现，才能获得他人对你价值的肯定。你独立性强，乐于从事那些能够产生重大影响和受人瞩目的工作。你不会满足于平庸，因为你的内在驱动力是在世界上留下深刻的印记。',
+    '战略': '你是一个远见家。 战略主题较强的人足智多谋，能迅速找出达成目标的最佳路径。你的思维像一个“高效的过滤器”，能够在混乱中识别出相关的模式和结果。当别人看到复杂性时，你看到的是选择。你总是问：“如果这样，那么会怎样？”你善于预见障碍并提前制定应对策略，你为团队提供了一个清晰的、避免弯路的行动计划。',
+    '取悦': '你乐于赢取他人。 你喜欢与人破冰，并能轻松地使陌生人喜欢上你。你充满了社交能量，并渴望与新的人建立联系。你享受“赢取”（Wooing）他人的过程，无论是通过魅力、赞扬还是幽默。你专注于创造积极的第一次接触，并迅速建立融洽的关系。你的社交天赋使你成为一个出色的网络建立者和影响力传播者。',
+    // 注意：亲和、谦逊等非标准 34 主题，已从这个详细描述中移除，以保证与评分逻辑的主题一致性。
+};
+
+   
+     document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+
+</html>
